@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduManage – Modern Course Management System</title>
+
+  <!-- Inter Font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind CSS (CDN) -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.0/dist/tailwind.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- Custom CSS for color‑palette & utilities -->
+  <style>
+    :root {
+      --color-primary: #2563eb;
+      --color-primary-dark: #1d4ed8;
+      --color-secondary: #64748b;
+      --color-accent: #10b981;
+      --color-bg: #f8fafc;
+      --color-surface: #ffffff;
+      --color-text: #1e293b;
+      --color-border: #e2e8f0;
+      --color-success: #10b981;
+      --color-warning: #f59e0b;
+      --color-error: #ef4444;
+    }
+    .dark {
+      --color-bg: #0f172a;
+      --color-surface: #1e293b;
+      --color-text: #f1f5f9;
+      --color-border: #334155;
+    }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+        'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+    }
+    .bg-primary {
+      background-color: var(--color-primary);
+    }
+    .bg-primary-dark {
+      background-color: var(--color-primary-dark);
+    }
+    .bg-secondary {
+      background-color: var(--color-secondary);
+    }
+    .bg-accent {
+      background-color: var(--color-accent);
+    }
+    .text-primary {
+      color: var(--color-primary);
+    }
+    .text-secondary {
+      color: var(--color-secondary);
+    }
+    .text-accent {
+      color: var(--color-accent);
+    }
+    .border-primary {
+      border-color: var(--color-primary);
+    }
+    .shadow-card {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    }
+    .shadow-card-lg {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    }
+    .transition {
+      transition: all 300ms ease-in-out;
+    }
+    .rounded {
+      border-radius: 8px;
+    }
+    .skeleton {
+      background: linear-gradient(
+        90deg,
+        #e5e7eb,
+        #f3f4f6,
+        #e5e7eb
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer {
+      0% {
+        background-position: -200% 0;
+      }
+      100% {
+        background-position: 200% 0;
+      }
+    }
+  </style>
+</head>
+
+<body class="dark:bg-bg">
+  <div id="root"></div>
+
+  <!-- ==== React & Libraries (ESM CDN) ==== -->
+  <script type="module">
+    // ------- Imports ---------------------------------------------------------
+    import React, { useState, useEffect, useCallback, useRef, Suspense, lazy } from 'https://cdn.skypack.dev/react';
+    import ReactDOM from 'https://cdn.skypack.dev/react-dom/client';
+    import { QueryClient, QueryClientProvider, useQuery } from 'https://cdn.skypack.dev/@tanstack/react-query';
+    import { useForm } from 'https://cdn.skypack.dev/react-hook-form';
+    import { motion, AnimatePresence } from 'https://cdn.skypack.dev/framer-motion';
+    import {
+      DragDropContext,
+      Droppable,
+      Draggable,
+    } from 'https://cdn.skypack.dev/react-beautiful-dnd';
+    import i18next from 'https://cdn.skypack.dev/i18next';
+    import { initReactI18next, useTranslation } from 'https://cdn.skypack.dev/react-i18next';
+    import Chart from 'https://cdn.skypack.dev/chart.js';
+    import Notiflix from 'https://cdn.skypack.dev/notiflix';
+    // -------------------------------------------------------------------------
+
+    // ------------------- i18n config ----------------------------------------
+    i18next.use(initReactI18next).init({
+      resources: {
+        en: {
+          translation: {
+            dashboard: 'Dashboard',
+            recentActivity: 'Recent Activity',
+            courses: 'Courses',
+            students: 'Students',
+            addCourse: 'Add Course',
+            courseTitle: 'Course Title',
+            instructor: 'Instructor',
+            save: 'Save',
+            cancel: 'Cancel',
+            searchPlaceholder: 'Search courses...',
+            filterAll: 'All Courses',
+            filterActive: 'Active',
+            filterCompleted: 'Completed',
+            statusActive: 'Active',
+            statusPending: 'Pending',
+            statusInactive: 'Inactive',
+            themeToggle: 'Toggle theme',
+            languageToggle: 'Language',
+            manage: 'Manage',
+            continue: 'Continue',
+          },
+        },
+        es: {
+          translation: {
+            dashboard: 'Panel',
+            recentActivity: 'Actividad Reciente',
+            courses: 'Cursos',
+            students: 'Estudiantes',
+            addCourse: 'Agregar Curso',
+            courseTitle: 'Título del Curso',
+            instructor: 'Instructor',
+            save: 'Guardar',
+            cancel: 'Cancelar',
+            searchPlaceholder: 'Buscar cursos...',
+            filterAll: 'Todos los Cursos',
+            filterActive: 'Activos',
+            filterCompleted: 'Completados',
+            statusActive: 'Activo',
+            statusPending: 'Pendiente',
+            statusInactive: 'Inactivo',
+            themeToggle: 'Cambiar tema',
+            languageToggle: 'Idioma',
+            manage: 'Administrar',
+            continue: 'Continuar',
+          },
+        },
+      },
+      lng: 'en',
+      fallbackLng: 'en',
+      interpolation: { escapeValue: false },
+    });
+    // -------------------------------------------------------------------------
+
+    // -------------------- Mock API (simulated with timeouts) -----------------
+    const mockFetch = (data, delay = 800) =>
+      new Promise((resolve) => setTimeout(() => resolve(data), delay));
+
+    const fetchMetrics = () =>
+      mockFetch({
+        students: 1248,
+        courses: 36,
+        completion: 78,
+        satisfaction: 4.7,
+        trends: {
+          labels: [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+          ],
+          enrollments: [
+            120, 150, 180, 200, 250, 300,
+            320, 340, 360, 380, 400, 450,
+          ],
+        },
+      });
+
+    const fetchCourses = () =>
+      mockFetch([
+        {
+          id: 'c1',
+          title: 'Advanced Web Development',
+          instructor: 'John Smith',
+          progress: 75,
+          img: '',
+        },
+        {
+          id: 'c2',
+          title: 'Data Science Fundamentals',
+          instructor: 'Sarah Johnson',
+          progress: 92,
+          img: '',
+        },
+        {
+          id: 'c3',
+          title: 'UI/UX Design Principles',
+          instructor: 'Michael Brown',
+          progress: 56,
+          img: '',
+        },
+        {
+          id: 'c4',
+          title: 'Digital Marketing Strategy',
+          instructor: 'Emily Davis',
+          progress: 34,
+          img: '',
+        },
+      ]);
+
+    const fetchStudents = (page = 1, limit = 5) =>
+      mockFetch({
+        total: 22,
+        data: Array.from({ length: limit }, (_, i) => ({
+          id: `s${(page - 1) * limit + i + 1}`,
+          name: `Student ${(page - 1) * limit + i + 1}`,
+          email: `student${(page - 1) * limit + i + 1}@example.com`,
+          courses: Math.floor(Math.random() * 5) + 1,
+          status: ['active', 'pending', 'inactive'][
+            Math.floor(Math.random() * 3)
+          ],
+          lastActive: ['Today', 'Yesterday', '2 days ago'][
+            Math.floor(Math.random() * 3)
+          ],
+        })),
+      });
+    // -------------------------------------------------------------------------
+
+    // -------------------- TypeScript‑like Interfaces (JSDoc) ---------------
+    /**
+     * @typedef {Object} MetricData
+     * @property {number} students
+     * @property {number} courses
+     * @property {number} completion
+     * @property {number} satisfaction
+     * @property {{labels:string[], enrollments:number[]}} trends
+     */
+    /**
+     * @typedef {Object} Course
+     * @property {string} id
+     * @property {string} title
+     * @property {string} instructor
+     * @property {number} progress
+     * @property {string} img
+     */
+    /**
+     * @typedef {Object} Student
+     * @property {string} id
+     * @property {string} name
+     * @property {string} email
+     * @property {number} courses
+     * @property {'active'|'pending'|'inactive'} status
+     * @property {string} lastActive
+     */
+    // -------------------------------------------------------------------------
+
+    // -------------------- Global Query Client -------------------------------
+    const queryClient = new QueryClient();
+    // -------------------------------------------------------------------------
+
+    // -------------------- Utility: debounce (used for search) ---------------
+    const useDebounce = (value, delay = 500) => {
+      const [debounced, setDebounced] = useState(value);
+      useEffect(() => {
+        const handler = setTimeout(() => setDebounced(value), delay);
+        return () => clearTimeout(handler);
+      }, [value, delay]);
+      return debounced;
+    };
+    // -------------------------------------------------------------------------
+
+    // ====================== COMPONENTS =====================================
+
+    // ---------- Error Boundary -------------------------------------------
+    class ErrorBoundary extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false };
+      }
+      static getDerivedStateFromError() {
+        return { hasError: true };
+      }
+      componentDidCatch(error, errorInfo) {
+        console.error('ErrorBoundary caught an error', error, errorInfo);
+        Notiflix.Notify.failure('Something went wrong!');
+      }
+      render() {
+        if (this.state.hasError) {
+          return (
+            <div className="p-8 text-center">
+              <h2 className="text-2xl font-semibold mb-4">
+                Oops! Something broke.
+              </h2>
+              <button
+                className="btn-primary text-white py-2 px-4 rounded"
+                onClick={() => window.location.reload()}
+              >
+                Reload
+              </button>
+            </div>
+          );
+        }
+        return this.props.children;
+      }
+    }
+    // ---------------------------------------------------------------------
+
+    // ---------- Theme Toggle ------------------------------------------------
+    const ThemeToggle = () => {
+      const { t } = useTranslation();
+      const [isDark, setIsDark] = useState(
+        () => localStorage.getItem('theme') === 'dark'
+      );
+
+      const toggle = () => {
+        const root = document.documentElement;
+        if (isDark) {
+          root.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        } else {
+          root.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        }
+        setIsDark(!isDark);
+      };
+      return (
+        <button
+          className="theme-toggle transition"
+          onClick={toggle}
+          aria-label={t('themeToggle')}
+        >
+          {isDark ? (
+            // sun
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M10 15a5 5 0 100-10 5 5 0 000 10z" />
+              <path d="M10 1v2M10 17v2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M1 10h2M17 10h2M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" />
+            </svg>
+          ) : (
+            // moon
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M17.293 13.293a8 8 0 01-11.586-11.586 8 8 0 1011.586 11.586z"
+                clipRule="evenodd"
+              />
+            </svg>
+          )}
+        </button>
+      );
+    };
+    // ---------------------------------------------------------------------
+
+    // ---------- Language Switcher -----------------------------------------
+    const LanguageSwitcher = () => {
+      const { i18n, t } = useTranslation();
+      const toggle = () => {
+        const newLang = i18n.language === 'en' ? 'es' : 'en';
+        i18n.changeLanguage(newLang);
+      };
+      return (
+        <button
+          className="ml-4 text-sm font-medium transition"
+          onClick={toggle}
+          aria-label={t('languageToggle')}
+        >
+          {i18n.language === 'en' ? 'ES' : 'EN'}
+        </button>
+      );
+    };
+    // ---------------------------------------------------------------------
+
+    // ---------- Skeleton Loader Component ---------------------------------
+    const SkeletonBlock = ({ className = '' }) => (
+      <div className={`skeleton rounded ${className}`} />
+    );
+    // ---------------------------------------------------------------------
+
+    // ---------- MetricCard -------------------------------------------------
+    const MetricCard = ({ title, value, trend, isLoading }) => {
+      const { t } = useTranslation();
+      return (
+        <div className="bg-primary text-white p-5 rounded shadow-card transition">
+          {isLoading ? (
+            <SkeletonBlock className="h-12 w-3/4 mb-2" />
+          ) : (
+            <>
+              <h3 className="text-sm font-medium">{title}</h3>
+              <p className="text-3xl font-bold">{value}</p>
+              {trend && (
+                <p className={`flex items-center ${trend.type === 'up' ? 'text-success' : 'text-error'}`}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`h-4 w-4 mr-1 ${
+                      trend.type === 'up' ? 'transform rotate-45' : 'transform -rotate-45'
+                    }`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                  {trend.text}
+                </p>
+              )}
+            </>
+          )}
+        </div>
+      );
+    };
+    // ---------------------------------------------------------------------
+
+    // ---------- EnrollmentChart (Chart.js) ----------------------------------
+    const EnrollmentChart = ({ data, isLoading }) => {
+      const chartRef = useRef(null);
+      const chartInstance = useRef(null);
+
+      useEffect(() => {
+        if (!isLoading && data && chartRef.current) {
+          const ctx = chartRef.current.getContext('2d');
+          const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+          gradient.addColorStop(0, 'rgba(37, 99, 235, 0.5)');
+          gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
+
+          if (chartInstance.current) chartInstance.current.destroy();
+
+          chartInstance.current = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: data.labels,
+              datasets: [
+                {
+                  label: 'Enrollments',
+                  data: data.enrollments,
+                  backgroundColor: gradient,
+                  borderColor: 'var(--color-primary)',
+                  borderWidth: 3,
+                  fill: true,
+                  tension: 0.3,
+                  pointBackgroundColor: '#fff',
+                  pointBorderColor: 'var(--color-primary)',
+                  pointRadius: 5,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: 'rgba(30,41,59,0.9)',
+                  titleColor: '#fff',
+                  bodyColor: '#e2e8f0',
+                  borderColor: 'rgba(255,255,255,0.1)',
+                  borderWidth: 1,
+                  padding: 12,
+                },
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: 'rgba(226,232,240,0.3)' },
+                  ticks: { color: 'var(--color-secondary)' },
+                },
+                x: {
+                  grid: { display: false },
+                  ticks: { color: 'var(--color-secondary)' },
+                },
+              },
+            },
+          });
+        }
+      }, [data, isLoading]);
+
+      return (
+        <div className="h-64">
+          {isLoading ? (
+            <SkeletonBlock className="h-full w-full" />
+          ) : (
+            <canvas ref={chartRef}></canvas>
+          )}
+        </div>
+      );
+    };
+    // ---------------------------------------------------------------------
+
+    // ---------- ActivityFeed (Infinite scroll simulation) -------------------
+    const ActivityFeed = () => {
+      const { t } = useTranslation();
+      const [items, setItems] = useState([
+        {
+          id: 1,
+          user: 'JD',
+          name: 'John Doe',
+          action: 'Created new course "Advanced React Patterns"',
+          time: '2 hours ago',
+        },
+        {
+          id: 2,
+          user: 'AS',
+          name: 'Alice Smith',
+          action: 'Completed "Data Science Fundamentals"',
+          time: '5 hours ago',
+        },
+        {
+          id: 3,
+          user: 'MJ',
+          name: 'Mike Johnson',
+          action: 'Uploaded new resources for "Web Development"',
+          time: 'Yesterday',
+        },
+        {
+          id: 4,
+          user: 'EP',
+          name: 'Emma Parker',
+          action: 'Published article "Best Practices for Online Learning"',
+          time: '2 days ago',
+        },
+      ]);
+
+      // In a real app you would load more on scroll - here we just render the static list
+      return (
+        <div className="space-y-4">
+          {items.map((it) => (
+            <div key={it.id} className="flex gap-3">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-medium">
+                {it.user}
+              </div>
+              <div>
+                <p className="font-medium">{it.name}</p>
+                <p className="text-sm text-secondary">{it.action}</p>
+                <p className="text-xs text-secondary">{it.time}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    };
+    // ---------------------------------------------------------------------
+
+    // ---------- CourseCard (drag‑and‑drop enabled) -------------------------
+    const CourseCard = ({ course, index }) => (
+      <Draggable draggableId={course.id} index={index}>
+        {(provided) => (
+          <motion.div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            className="bg-surface rounded shadow-card p-4 transition hover:shadow-card-lg"
+            whileHover={{ scale: 1.02 }}
+          >
+            <div className="h-40 bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-semibold rounded mb-3">
+              {course.title.split(' ')[0]}
+            </div>
+            <h3 className="font-semibold text-base mb-1">{course.title}</h3>
+            <p className="text-sm text-secondary mb-2">
+              Instructor: {course.instructor}
+            </p>
+            <div className="mb-3">
+              <div className="flex justify-between text-xs mb-1">
+                <span>Progress</span>
+                <span>{course.progress}%</span>
+              </div>
+              <div className="h-2 bg-border rounded">
+                <div
+                  className="h-full bg-primary rounded"
+                  style={{ width: `${course.progress}%` }}
+                ></div>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button className="btn btn-outline flex-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 mr-1"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                {t('continue')}
+              </button>
+              <button className="btn btn-primary flex-1">{t('manage')}</button>
+            </div>
+          </motion.div>
+        )}
+      </Draggable>
+    );
+    // ---------------------------------------------------------------------
+
+    // ---------- CoursesSection (search, filter, bulk actions) -------------
+    const CoursesSection = () => {
+      const { t } = useTranslation();
+      const [search, setSearch] = useState('');
+      const debouncedSearch = useDebounce(search, 400);
+      const [filter, setFilter] = useState('all');
+
+      const {
+        data: courses,
+        isLoading,
+        refetch,
+      } = useQuery(['courses', debouncedSearch, filter], fetchCourses);
+
+      // Drag‑and‑drop ordering
+      const onDragEnd = (result) => {
+        if (!result.destination) return;
+        // In a real app you would persist the new ordering to the backend
+        Notiflix.Notify.success('Course order updated');
+      };
+
+      // Adding a new course (React Hook Form)
+      const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+      } = useForm();
+
+      const onSubmit = (data) => {
+        // Mock API call
+        Notiflix.Notify.success(`Course "${data.title}" created`);
+        reset();
+        refetch(); // re‑load list
+      };
+
+      // Filtered & searched list (simple client‑side for demo)
+      const filteredCourses = (courses ?? []).filter((c) => {
+        const matchesSearch =
+          c.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          c.instructor.toLowerCase().includes(debouncedSearch.toLowerCase());
+        const matchesFilter = filter === 'all' ? true : filter === 'active'; // placeholder
+        return matchesSearch && matchesFilter;
+      });
+
+      return (
+        <section className="mt-10">
+          <div className="flex flex-col md:flex-row md:justify-between items-start gap-4">
+            <div className="flex items-center gap-3">
+              <input
+                type="text"
+                placeholder={t('searchPlaceholder')}
+                className="search-bar w-64 px-2 py-1 rounded bg-surface border border-border focus:outline-none focus:border-primary transition"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                aria-label={t('searchPlaceholder')}
+              />
+              <select
+                className="px-2 py-1 rounded bg-surface border border-border focus:outline-none focus:border-primary transition"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                aria-label="Filter courses"
+              >
+                <option value="all">{t('filterAll')}</option>
+                <option value="active">{t('filterActive')}</option>
+                <option value="completed">{t('filterCompleted')}</option>
+              </select>
+            </div>
+
+            {/* New Course Modal (simplified as inline form) */}
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="bg-surface p-4 rounded shadow-card space-y-2 w-full md:w-96"
+            >
+              <h2 className="font-semibold">{t('addCourse')}</h2>
+              <div>
+                <label className="block text-sm mb-1">{t('courseTitle')}</label>
+                <input
+                  type="text"
+                  {...register('title', { required: true })}
+                  className="w-full px-2 py-1 rounded border border-border focus:outline-none focus:border-primary transition"
+                  aria-invalid={errors.title ? 'true' : 'false'}
+                />
+                {errors.title && (
+                  <p className="text-xs text-error mt-1">Required</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm mb-1">{t('instructor')}</label>
+                <input
+                  type="text"
+                  {...register('instructor', { required: true })}
+                  className="w-full px-2 py-1 rounded border border-border focus:outline-none focus:border-primary transition"
+                />
+                {errors.instructor && (
+                  <p className="text-xs text-error mt-1">Required</p>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button type="submit" className="btn btn-primary flex-1">
+                  {t('save')}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-outline flex-1"
+                  onClick={() => reset()}
+                >
+                  {t('cancel')}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div className="mt-6">
+            {isLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[...Array(4)].map((_, i) => (
+                  <SkeletonBlock key={i} className="h-80" />
+                ))}
+              </div>
+            ) : (
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="coursesDroppable" direction="horizontal">
+                  {(provided) => (
+                    <div
+                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                    >
+                      {filteredCourses.map((c, idx) => (
+                        <CourseCard key={c.id} course={c} index={idx} />
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            )}
+          </div>
+        </section>
+      );
+    };
+    // ---------------------------------------------------------------------
+
+    // ---------- Students Section (table with pagination) --------------------
+    const StudentsSection = () => {
+      const { t } = useTranslation();
+      const [page, setPage] = useState(1);
+      const { data, isLoading } = useQuery(
+        ['students', page],
+        () => fetchStudents(page),
+        { keepPreviousData: true }
+      );
+
+      const totalPages = data ? Math.ceil(data.total / 5) : 0;
+
+      return (
+        <section className="mt-10">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">{t('students')}</h2>
+            <button className="btn btn-primary">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 mr-1"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              {t('addCourse')}
+            </button>
+          </div>
+
+          <div className="bg-surface rounded shadow-card overflow-hidden">
+            {isLoading ? (
+              <SkeletonBlock className="h-48 w-full" />
+            ) : (
+              <table className="min-w-full">
+                <thead className="bg-gray-100 dark:bg-gray-800">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-xs uppercase">
+                      Name
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs uppercase">
+                      Email
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs uppercase">
+                      Courses
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs uppercase">
+                      Status
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs uppercase">
+                      Last Active
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs uppercase">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.data.map((st) => (
+                    <tr key={st.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <td className="px-4 py-2">{st.name}</td>
+                      <td className="px-4 py-2">{st.email}</td>
+                      <td className="px-4 py-2">{st.courses}</td>
+                      <td className="px-4 py-2">
+                        <span
+                          className={`status-badge ${
+                            st.status === 'active'
+                              ? 'bg-success/10 text-success'
+                              : st.status === 'pending'
+                              ? 'bg-warning/10 text-warning'
+                              : 'bg-error/10 text-error'
+                          }`}
+                        >
+                          {t(`status${st.status.charAt(0).toUpperCase() + st.status.slice(1)}`)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2">{st.lastActive}</td>
+                      <td className="px-4 py-2">
+                        <button className="btn btn-outline p-1">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          {/* Pagination */}
+          <div className="flex justify-center gap-2 mt-4">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((p) => p - 1)}
+              className="page-btn disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i + 1)}
+                className={`page-btn ${page === i + 1 ? 'bg-primary text-white' : ''}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className="page-btn disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        </section>
+      );
+    };
+    // ---------------------------------------------------------------------
+
+    // ---------- Main App ---------------------------------------------------
+    const App = () => {
+      const { t } = useTranslation();
+
+      // Dashboard data fetch
+      const {
+        data: metrics,
+        isLoading: metricsLoading,
+      } = useQuery(['metrics'], fetchMetrics);
+
+      return (
+        <div className="min-h-screen flex flex-col">
+          {/* Header */}
+          <header className="bg-surface shadow-card p-4 flex justify-between items-center">
+            <h1 className="text-2xl font-semibold text-primary">{t('dashboard')}</h1>
+            <div className="flex items-center">
+              <ThemeToggle />
+              <LanguageSwitcher />
+            </div>
+          </header>
+
+          {/* Main content */}
+          <main className="flex-1 container mx-auto px-4 py-6">
+            {/* ===== Dashboard Widgets ===== */}
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <MetricCard
+                title={t('students')}
+                value={metrics?.students ?? 0}
+                trend={{ type: 'up', text: '+12% from last month' }}
+                isLoading={metricsLoading}
+              />
+              <MetricCard
+                title={t('courses')}
+                value={metrics?.courses ?? 0}
+                trend={{ type: 'up', text: '+3 new this week' }}
+                isLoading={metricsLoading}
+              />
+              <MetricCard
+                title={t('completionRate')}
+                value={`${metrics?.completion ?? 0}%`}
+                trend={{ type: 'down', text: '-2% from last month' }}
+                isLoading={metricsLoading}
+              />
+              <MetricCard
+                title={t('satisfaction')}
+                value={`${metrics?.satisfaction ?? 0}/5`}
+                trend={{ type: 'up', text: 'Excellent feedback' }}
+                isLoading={metricsLoading}
+              />
+            </section>
+
+            {/* Chart + Activity Feed */}
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+              <div className="bg-surface rounded shadow-card p-4">
+                <h2 className="section-title mb-4">{t('recentActivity')}</h2>
+                <ActivityFeed />
+              </div>
+
+              <div className="bg-surface rounded shadow-card p-4">
+                <h2 className="section-title mb-4">{t('dashboard')} Analytics</h2>
+                <EnrollmentChart
+                  data={metrics?.trends}
+                  isLoading={metricsLoading}
+                />
+              </div>
+            </section>
+
+            {/* ===== Courses Section ===== */}
+            <CoursesSection />
+
+            {/* ===== Students Section ===== */}
+            <StudentsSection />
+          </main>
+
+          {/* Footer */}
+          <footer className="bg-surface text-center py-4 text-sm text-secondary">
+            © 2023 EduManage • All rights reserved.
+          </footer>
+        </div>
+      );
+    };
+    // ---------------------------------------------------------------------
+
+    // ----------- Render ----------------------------------------------------
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(
+      <React.StrictMode>
+        <ErrorBoundary>
+          <QueryClientProvider client={queryClient}>
+            <App />
+          </QueryClientProvider>
+        </ErrorBoundary>
+      </React.StrictMode>
+    );
+    // ---------------------------------------------------------------------
+
+  </script>
+</body>
+</html>
