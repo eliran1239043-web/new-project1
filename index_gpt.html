@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Course Management System</title>
+
+  <!-- Inter Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif']
+        },
+        extend: {
+          colors: {
+            primary: '#2563eb',
+            secondary: '#64748b',
+            accent: '#10b981',
+            bg: '#f8fafc',
+            text: '#1e293b'
+          },
+          borderRadius: {
+            lg: '8px'
+          },
+          boxShadow: {
+            card: '0 4px 12px rgba(0,0,0,0.05)'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-bg text-text dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
+
+<!-- Toast -->
+<div id="toast" class="fixed top-4 right-4 hidden bg-accent text-white px-4 py-2 rounded-lg shadow-card"></div>
+
+<!-- Header -->
+<header class="sticky top-0 z-40 bg-white dark:bg-slate-800 shadow-sm">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <h1 class="text-xl font-semibold">Course Manager</h1>
+
+    <div class="flex items-center gap-4">
+      <select id="lang" class="border rounded px-2 py-1 text-sm dark:bg-slate-700">
+        <option value="en">EN</option>
+        <option value="he">HE</option>
+      </select>
+
+      <button id="darkToggle" aria-label="Toggle dark mode"
+        class="px-3 py-1 rounded bg-secondary text-white hover:opacity-90 transition">
+        🌙
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Layout -->
+<main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-12 gap-6">
+
+  <!-- Sidebar -->
+  <aside class="col-span-12 md:col-span-3 space-y-2">
+    <nav class="bg-white dark:bg-slate-800 rounded-lg shadow-card p-4 space-y-2">
+      <button class="w-full text-left px-3 py-2 rounded hover:bg-bg dark:hover:bg-slate-700">Dashboard</button>
+      <button class="w-full text-left px-3 py-2 rounded hover:bg-bg dark:hover:bg-slate-700">Courses</button>
+      <button class="w-full text-left px-3 py-2 rounded hover:bg-bg dark:hover:bg-slate-700">Students</button>
+      <button class="w-full text-left px-3 py-2 rounded hover:bg-bg dark:hover:bg-slate-700">Analytics</button>
+    </nav>
+  </aside>
+
+  <!-- Content -->
+  <section class="col-span-12 md:col-span-9 space-y-8">
+
+    <!-- Metrics -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="rounded-lg shadow-card p-4 bg-gradient-to-br from-primary to-blue-400 text-white">
+        <p class="text-sm opacity-80">Total Courses</p>
+        <h2 class="text-2xl font-semibold">12</h2>
+      </div>
+      <div class="rounded-lg shadow-card p-4 bg-gradient-to-br from-accent to-emerald-400 text-white">
+        <p class="text-sm opacity-80">Active Students</p>
+        <h2 class="text-2xl font-semibold">348</h2>
+      </div>
+      <div class="rounded-lg shadow-card p-4 bg-gradient-to-br from-slate-600 to-slate-400 text-white">
+        <p class="text-sm opacity-80">Completion Rate</p>
+        <h2 class="text-2xl font-semibold">82%</h2>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-card p-6">
+      <h3 class="font-semibold mb-4">Enrollment Trends</h3>
+      <canvas id="chart" height="120"></canvas>
+    </div>
+
+    <!-- Courses -->
+    <div>
+      <h3 class="font-semibold mb-4">Courses</h3>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-card p-4">
+          <h4 class="font-semibold">UX Fundamentals</h4>
+          <div class="h-2 bg-slate-200 rounded mt-2">
+            <div class="h-2 bg-accent rounded w-2/3"></div>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-card p-4">
+          <h4 class="font-semibold">Advanced React</h4>
+          <div class="h-2 bg-slate-200 rounded mt-2">
+            <div class="h-2 bg-primary rounded w-1/3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Students Table -->
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-card p-6">
+      <h3 class="font-semibold mb-4">Students</h3>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-secondary">
+            <th class="py-2">Name</th>
+            <th>Status</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-t">
+            <td class="py-2">Dana Cohen</td>
+            <td><span class="px-2 py-1 rounded bg-accent text-white text-xs">Active</span></td>
+            <td>Student</td>
+          </tr>
+          <tr class="border-t">
+            <td class="py-2">Avi Levi</td>
+            <td><span class="px-2 py-1 rounded bg-secondary text-white text-xs">Pending</span></td>
+            <td>Student</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+</main>
+
+<!-- Scripts -->
+<script>
+  // Toast
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.remove('hidden');
+    setTimeout(() => t.classList.add('hidden'), 3000);
+  }
+
+  // Dark mode
+  document.getElementById('darkToggle').onclick = () => {
+    document.documentElement.classList.toggle('dark');
+    toast('Theme updated');
+  };
+
+  // i18n demo
+  document.getElementById('lang').onchange = (e) => {
+    toast('Language switched to ' + e.target.value.toUpperCase());
+  };
+
+  // Chart
+  new Chart(document.getElementById('chart'), {
+    type: 'line',
+    data: {
+      labels: ['Jan','Feb','Mar','Apr','May'],
+      datasets: [{
+        label: 'Enrollments',
+        data: [120, 190, 170, 220, 260],
+        borderWidth: 2,
+        tension: 0.4
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+
+  // Skeleton demo
+  setTimeout(() => toast('Data loaded'), 800);
+</script>
+
+</body>
+</html>
